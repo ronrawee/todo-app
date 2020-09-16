@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Todo from './Todo';
-
+import db from './firebase'
 
 function App() {
   // we need a list of todo's
@@ -9,9 +9,21 @@ function App() {
   const [todos, setTodos] = useState([])
   const [input, setInput] = useState('')
 
+  // when this componet ran, ran this function once
+  useEffect(() => {
+    db.collection('todos').onSnapshot(snapshot => {
+      setTodos(snapshot.docs.map(doc => doc.data().title))
+    })
+  }, [])
+
   const handelSubmit = (e) => {
     e.preventDefault()
-    setTodos([...todos, input])
+
+    //setTodos([...todos, input])
+    db.collection('todos').add({
+      title: input,
+    })
+
     setInput("")
   }
 
